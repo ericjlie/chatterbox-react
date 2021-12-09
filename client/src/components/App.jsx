@@ -1,8 +1,9 @@
 import React from 'react';
 import ChangeUsername from './changeUsername.jsx';
 import RoomChanger from './RoomChanger.jsx';
-import ChatBar from './ChatBar.jsx'
-import MessageList from './MessageList.jsx'
+import ChatBar from './ChatBar.jsx';
+import MessageList from './MessageList.jsx';
+import SearchMessages from './SearchMessages.jsx';
 const axios = require('axios');
 
 class App extends React.Component {
@@ -18,6 +19,7 @@ class App extends React.Component {
     this.refreshData = this.refreshData.bind(this);
     this.sendMessageHandler = this.sendMessageHandler.bind(this);
     this.changeRoomHandler = this.changeRoomHandler.bind(this);
+    this.dataSearchHandler = this.dataSearchHandler.bind(this);
   }
 
   //API call tester
@@ -38,7 +40,7 @@ class App extends React.Component {
   }
 
   sendMessageHandler (text) {
-    let sendbody = JSON.stringify({text: text, username: this.state.username, roomname: this.state.currentRoom})
+    let sendbody = JSON.stringify({text: text, username: this.state.username, roomname: this.state.currentRoom});
     fetch('http://127.0.0.1:3001/classes/messages', {
       method: 'POST',
       headers: {
@@ -53,23 +55,37 @@ class App extends React.Component {
     this.setState({currentRoom: room})
   }
 
+  dataSearchHandler (username, query) {
+    let serachQuery = JSON.stringify({username: 'username', query: 'query'})
+    fetch('http://127.0.0.1:3001/classes/messages', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: serachQuery,
+    })
+  }
+
   render() {
     return (
     <div>
     <div id="main">
       <h1>chatterbox</h1>
-      <div id="username">
+      <div class="input" id="username">
         <span>Username: {this.state.username}</span>
         <span><ChangeUsername changeUsernameHandler={this.changeUsernameHandler}/></span>
       </div>
-      <div id="rooms">
+      <div class="input" id="rooms">
         <span>Current Room: {this.state.currentRoom}</span>
         <span><RoomChanger changeRoomHandler={this.changeRoomHandler}/></span>
       </div>
-      <div id="chatbar">
+      <div class="input" id="searchbar">
+        <span><SearchMessages dataSearchHandler={this.dataSearchHandler}/></span>
+      </div>
+      <div class="input" id="chatbar">
         <span><ChatBar sendMessageHandler={this.sendMessageHandler}/></span>
       </div>
-      <span><button onClick={()=>this.refreshData}>Update Messages</button></span>
+      <span><button onClick={()=>{this.refreshData()}}>Update Messages</button></span>
     </div>
     <div id="chats">
       <MessageList
